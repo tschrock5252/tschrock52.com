@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tschrock52.com - Home</title>
+    <link rel="stylesheet" href="../css/responsive-attributes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <main data-sm="1column gap" data-md="2column gap" data-lg="4column gap">
+        <header data-sm="pad" data-md="colspan2" data-lg="colspan4 order1">
+            <div data-sm="center" class="site-title">Tyler Schrock</div>
+            <p class="subtitle">{System, Site Reliability, DevOps, Platform} Engineer</p>
+              <div class="social-icons">
+                <a href="https://github.com/tschrock5252" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank"><i class="fab fa-linkedin"></i></a>
+              </div>
+        </header>
+
+        <section class="menu-container" data-sm="pad" data-lg="order2">
+            <div class="menu">
+                <a href="../index.html">Home</a>
+                <a href="../about_me.html">About Me</a>
+                <a href="../site_architecture.html">Site Architecture</a>
+                <div class="accordion">
+                  <button class="accordion-toggle">Projects <i class="fas fa-chevron-down"></i></button>
+                  <div class="accordion-content">
+                    <a href="aginity_premium.html" data-project>Aginity Premium</a>
+                    <a href="canonical_landscape.html" data-project>Canonical Landscape</a>
+                    <a href="crowdstrike.html" data-project>Crowdstrike</a>
+                    <a href="ibm_cdc.html" data-project>IBM Change Data Capture (CDC)</a>
+                    <a href="openvpn_as.html" data-project>OpenVPN (Access Server)</a>
+                    <a href="openvpn_ce.html" data-project>OpenVPN (Community Edition)</a>
+                    <a href="planview_tasktop.html" data-project>Planview TaskTop</a>
+                    <a href="report_retrieval.html" data-project>Report Retrieval (Tomcat)</a>
+                    <a href="zabbix_snmp.html" data-project>Zabbix (SNMP Monitoring)</a>
+                    <a href="zabbix_windows.html" data-project>Zabbix (Windows Monitoring)</a>
+                  </div>
+                </div>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/tschrock5252" target="_blank">GitHub</a>
+            </div>
+        </section>
+
+        <article data-sm="pad" data-md="colspan2">
+            <p>
+                <h2>Overview</h2>
+                    <p>The client I was working with required SNMP monitoring for specific devices in their network.</p>
+                    <p>These devices did not support other traditional monitoring solutions.</p>
+                <h2>Architecture Diagram(s)</h2>
+                    <img src="../images/architecture_zabbix_snmp.png" alt="Zabbix Architecture" class="responsive-img">
+                <h3>Architecture Explanation</h3>
+                    <div class="section-block">
+                        <h4>
+                            Devices Requiring SNMP Monitoring
+                        </h4>
+                        <h5>SNMP Traps</h5>
+                        <ul>
+                            <li>These devices send SNMP traps on hardware failures to the CNAME clean-zabbix-cname.company.com. This CNAME points to the Zabbix Server.</li>
+                            <li><strong>Note</strong>: SNMP traps are a 1-way communication.</li>
+                        </ul>
+                        <h5>SNMP Polling</h5>
+                        <ul>
+                            <li>These devices receive SNMP polling communication/requests from the Zabbix Server.</li>
+                            <li>These devices reply to this SNMP polling with details needed to confirm hardware stats, etc.</li>
+                        </ul>
+                    </div>
+                    <div class="section-block">
+                        <h4>
+                            CNAME
+                        </h4>
+                        <p>
+                            The CNAME has two purposes:
+                        </p>
+                        <ol>
+                            <li>Facilitating a clean and easy-to-remember name for the Zabbix Server across the network (for web access, ticketing, etc).</li>
+                            <li>Allowing for the migration/transition to a new Zabbix server in the future. When this time comes, the Devices Requiring SNMP Monitoring should not need to change the host their configuration points at.</li>
+                        </ol>
+                    </div>
+                    <div class="section-block">
+                        <h4>
+                            Zabbix Server
+                        </h4>
+                        <h5>apache2 (Service)</h5>
+                        <ul>
+                            <li>apache2 runs as a service on the Zabbix Server. It front-ends the zabbix-server service allowing web access.</li>
+                            <li>apache2 listens on port 443.</li>
+                        </ul>
+                        <h5>snmpd (Service)</h5>
+                        <ul>
+                            <li>snmpd listens on port 161 and responds to any SNMP polling sent directly to the Zabbix Server.</li>
+                            <li>While snmpd is available to respond, this is not what the server is specifically built for (response to polling requests).</li>
+                        </ul>
+                        <h5>snmptrapd (Service)</h5>
+                        <ul>
+                            <li>snmptrapd listens on port 162 and responds to any incoming SNMP traps that are sent to it from Devices Requiring SNMP Monitoring on the network.</li>
+                            <li>It should be noted that, while there are many ways to process these traps, Zabbix recommends using the <a href="https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/misc/snmptrap/zabbix_trap_receiver.pl" target="_blank">zabbix_trap_receiver.pl</a>. I followed their best practices for this.
+                            <li>The snmptrapd service logs to the file at /var/log/snmptrapd.log
+                            <li>zabbix_trap_receiver.pl was set up to log to /var/log/snmptraps/snmptraps.log - From here, incoming SNMP traps can be viewed. Also, any issues with the zabbix_trap_receiver.pl can be seen during execution.</li>
+                        </ul>
+                        <h5>zabbix-agent (Service)</h5>
+                        <ul>
+                            <li>The zabbix-agent service is running and listens on port 10050</li>
+                            <li>This service collects and provides detailed system metrics to the Zabbix Server.</li>
+                        </ul>
+                        <h5>zabbix-server (Service)</h5>
+                        <ul>
+                            <li>The zabbix-server service is running and listens on port 10051</li>
+                            <li>This service performs SNMP polling to Devices Requiring SNMP Monitoring.</li>
+                            <li>This service alerts on any SNMP traps that are triggered.</li>
+                            <li>This service integrates with email, PagerDuty, and other systems to notify teams of "downed" devices.</li>
+                        </ul>
+                    </div>
+                    <div class="section-block">
+                        <h4>
+                            Zabbix Database Server
+                        </h4>
+                        <h5>postgresql (service)</h5>
+                        <ul>
+                            <li>The postgresql service is running on the database service and listens on port 5432</li>
+                            <li>The client's database configuration(s) didn't need a lot of custom setup. They already had a thoroughly developed Puppet architecture for PostgreSQL.</li>
+                        </ul>
+                    </div>
+                <h2>Automation and Code</h2>
+                    <div class="section-block">
+                        <h3>Overview</h3>
+                        <p>
+                            My client required Zabbix installations that were repeatable. I chose to do this with Puppet in their environment.
+                        </p>
+                        <p>
+                            I wrote a wrapper around the following Puppet Forge Module: <a href="https://forge.puppet.com/modules/puppet/zabbix/readme" target="_blank">Vop Pupuli zabbix module</a>
+                        </p>
+                        <p>
+                            I specifically architected it around this configuration: <a href="https://github.com/voxpupuli/puppet-zabbix/wiki/Multi-node-Zabbix-Server-setup" target="_blank">Multi node Zabbix Server setup</a>
+                        </p>
+                        <p>
+                            The authors detail various methods on this page for installing Zabbix. I chose the <a href="https://github.com/voxpupuli/puppet-zabbix/wiki/Multi-node-Zabbix-Server-setup#2-servers" target="_blank">2-server configuration with PostgreSQL as the database backend.</a>
+                        </p>
+                    </div>
+                    <div class="section-block">
+                        <h3>Zabbix Database Server</h3>
+                        <p>
+                            The client's database configuration(s) didn't need a lot of custom setup. They already had a thoroughly developed Puppet architecture for PostgreSQL.
+                        </p>
+                        <p>
+                            The only need was to engage the database team and provide project requirements.
+                        </p>
+                    </div>
+                    <div class="section-block">
+                        <h3>Zabbix Application Server</h3>
+                        <p>
+                            <strong>Note(s)</strong>
+                        </p>
+                        <ul>
+                            <li>At this client, the team cloned copies of modules from upstream vendors and then referenced these modules in their Puppetfile.</li>
+                            <li>Doing this allowed them to build additional features onto vendor modules and also "wrap" them. It was a useful, though sometimes imperfect feature.</li>
+                            <li>To keep this code anonymous, I'll obfuscate filenames.</li>
+                        </ul>
+                        <h4>Agent Components</h4>
+                        <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::server_filename::agent_hostname
+ - Defines the agent server hostname, used for the Zabbix agent. By String
+ 
+name_of_zabbix_wrapper_module::server::agent_server
+ - Defines the Zabbix server to use for the agent. By String
+                        </code></pre>
+                        <h4>Server Components</h4>
+                        <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::server_filename::cachesize
+ - Defines the the size of the configuration cache, in bytes. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_server
+ - Defines the Zabbix database server. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_name
+ - Defines the Zabbix database name. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_user
+ - Defines the Zabbix database user. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_password
+ - Defines the Zabbix database password. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_type
+ - Defines the Zabbix database server type. Valid options are mysql and postgresql.
+ 
+name_of_zabbix_wrapper_module::server_filename::maxhousekeeperdelete
+ - Defines the max amount of rows 'housekeeper' task may delete.
+ 
+name_of_zabbix_wrapper_module::server_filename::startpingers
+ - Number of pre-forked instances of icmp pingers.
+ 
+name_of_zabbix_wrapper_module::server_filename::startdiscoverers
+ - Number of pre-forked instances of discoverers.
+ 
+name_of_zabbix_wrapper_module::server_filename::snmptrapperfile
+ - Defines the location of the snmp trap file.
+ 
+name_of_zabbix_wrapper_module::server_filename::startsnmptrapper
+ - Defines whether or not to start the snmptrapper. 0=no, 1=yes.
+ 
+name_of_zabbix_wrapper_module::server_filename::trendcachesize
+ - Size of trend cache, in bytes
+                    </code></pre>
+                    <h4>Web Components</h4>
+                    <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::server_filename::apache_php_max_execution_time
+ - Defines the Apache PHP max execution time. By Integer.
+ 
+name_of_zabbix_wrapper_module::server_filename::apache_php_max_input_time
+ - Defines the Apache PHP max input time. By Integer.
+ 
+name_of_zabbix_wrapper_module::server_filename::apache_php_post_max_size
+ - Defines the Apache PHP post maximum size. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::cname
+ - Defines the CNAME used to access the Zabbix web interface. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::app_server
+ - Defines the Zabbix application server. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_server
+ - Defines the Zabbix database server. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_name
+ - Defines the Zabbix database name. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_user
+ - Defines the Zabbix database user. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_password
+ - Defines the Zabbix database password. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::zabbix_web_title
+ - Defines the Web UI title of the Zabbix server. By String.
+                    </code></pre>
+                    <h4>SNMP trap Components</h4>
+                    <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_community
+ - Defines the SNMP community that should be used by this server.
+ 
+name_of_zabbix_wrapper_module::receive_snmp_traps
+ - Defines whether or not a Zabbix Server should receive SNMP traps. Options are true or false. 
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script
+ - Defines the full path for the snmp perl script.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_owner
+ - Defines the user with ownership of the snmp_perl_script file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_group
+ - Defines the group with ownership of the snmp_perl_script file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_mode
+ - Defines the access mode of the snmp_perl_script file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile
+ - Defines the full path for the snmptrapperfile.
+ - This is the temporary file that receives SNMP traps on the Zabbix server.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_owner
+ - Defines the user with ownership of the snmptrapperfile.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_group
+ - Defines the group with ownership of the snmptrapperfile.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_mode
+ - Defines the access mode of the snmptrapperfile.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_conf_file
+ - Defines the full path for the snmptrapd configuration file.
+ - This is at /etc/snmp/snmptrapd.conf by default.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_owner
+ - Defines the user with ownership of the snmptrapd configuration file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_group
+ - Defines the group with ownership of the snmptrapd configuration file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_mode
+ - Defines the access mode of the snmptrapd configuration file.
+                </code></pre>
+</div>
+                <h2>Monitoring</h2>
+                    <div class="section-block">
+                        <h3>SNMP Monitoring</h3>
+                            <p>Systems that require SNMP monitoring demand configuration of a Zabbix server so that it can receive SNMP traps.</p>
+                            <p>(Official Documentation on this subject is available at the following location: <a href="https://www.zabbix.com/documentation/current/en/manual/config/items/itemtypes/snmptrap" target="_blank">Vendor Link</a></p>
+                            <div class="inline-table-container">
+                              <table class="inline-table">
+                                <thead>
+                                  <tr>
+                                    <th style="text-align: center">Step</th>
+                                    <th>Task</th>
+                                    <th>Puppet Code</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td style="text-align: center">1</td>
+                                    <td>
+                                      <strong>snmptrapd is installed, enabled on reboot, configured, and then verified to be running.</strong>
+                                      <ol>
+                                        <li>The following two packages are installed by Puppet to set up snmptrapd:</li>
+                                          <ul>
+                                            <li>snmptrapd</li>
+                                            <li>libsnmp-perl</li>
+                                          </ul>
+                                        <li>The configuration file for snmptrapd is at /etc/snmp/snmptrapd.conf</li>
+                                          <ul>
+                                            <li>The file's setup and state are managed by the client's in-house zabbix module that I built.</li>
+                                          </ul>
+                                        <li>This snmptrapd.conf file references the following script: /opt/zabbix_trapd/zabbix_trap_receiver.pl</li>
+                                        <ul>
+                                            <li>The following was set on line 45: perl do "/opt/zabbix_trapd/zabbix_trap_receiver.pl"</li>
+                                            <li>Explanations of the zabbix_trap_receiver.pl script are covered in step 2, below.</li>
+                                          </ul>
+                                      </ol>
+                                    </td>
+                                    <td>There is some code that verifies packages are installed that looks like this:
+<pre><code class="language-yaml">  package {
+    'snmptrapd':
+      ensure => installed,
+  }
+  package {
+    'libsnmp-perl':
+      ensure => installed,
+  }
+</code></pre>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="text-align: center">2</td>
+                                    <td><strong>For SNMP monitoring, Zabbix recommends using the <a href="https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/misc/snmptrap/zabbix_trap_receiver.pl" target="_blank">zabbix_trap_receiver.pl</a> script</strong>
+                                    <p>I set this up as an epp template. To enable that epp template, the following was defined in YAML:</p>
+                                    </td>
+                                    <td>
+<pre><code class="language-yaml">name_of_zabbix_wrapper_module::receive_snmp_traps: true
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script: /opt/zabbix_trapd/zabbix_trap_receiver.pl
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_owner: root
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_group: root
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_mode: 0755
+</code></pre>
+                                    
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="text-align: center">3</td>
+                                    <td>
+                                      <strong>A file is created locally on the file system that stores the traps</strong>
+                                      <p>This file is defined on line 43 of the zabbix_trap_receiver.pl script</p>
+                                      <p>In my case it was at /var/log/snmptraps/snmptraps.log</p>
+                                    </td>
+                                    <td>
+<pre><code class="language-yaml">name_of_zabbix_wrapper_module::server_filename::snmptrapperfile: /var/log/snmptraps/snmptraps.log
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_owner: root
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_group: zabbix
+
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_mode: 0755
+</code></pre>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="text-align: center">4</td>
+                                    <td>
+                                      <strong>The Zabbix Server configuration file is updated</strong>
+                                      <p>The configuration file at /etc/zabbix/zabbix_server.conf requires the following configuration options:</p>
+<pre><code class="language-yaml">SNMPTrapperFile=/var/log/snmptraps/snmptraps.log
+
+StartSNMPTrapper=1
+</code></pre>
+                                    </td>
+                                    <td>
+<pre><code class="language-yaml">name_of_zabbix_wrapper_module::server_filename::snmptrapperfile: /var/log/snmptraps/snmptraps.log
+
+name_of_zabbix_wrapper_module::server_filename::startsnmptrapper: 1
+</code></pre>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="text-align: center">5</td>
+                                    <td>
+                                      <strong>snmp-mibs-downloader needs installed for MIB support</strong>
+                                      <p>Documentation for this is available at the following link: <a href="https://majornetwork.net/2021/05/configuring-snmp-trap-receiver-for-zabbix-on-debian/" target="_blank">Third Party Link</a></p>
+                                    </td>
+                                    <td>
+<pre><code class="language-yaml">name_of_zabbix_wrapper_module::server_filename::snmptrapperfile: /var/log/snmptraps/snmptraps.log
+
+name_of_zabbix_wrapper_module::server_filename::startsnmptrapper: 1
+</code></pre>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                    </div>
+                <h2>Logs</h2>
+                    <div class="section-block">
+                        <h3>Zabbix Agent Logs - Linux</h3>
+                            <ul>
+                                <li>Zabbix Agent logs on Linux VMs are at the following location: /var/log/syslog</li>
+                            </ul>
+                    </div>
+                    <div class="section-block">
+                        <h3>Zabbix Server Logs</h3>
+                            <ul>
+                                <li>Zabbix Server logs on Linux VMs are at the following location: /var/log/syslog</li>
+                            </ul>
+                    </div>
+                    <div class="section-block">
+                        <h3>SNMP Daemon Logs</h3>
+                            <ul>
+                                <li>snmpd is running on port 161. Logs for it are at the following location: /var/log/snmp</li>
+                                <li>snmptrapd is running on port 162. Logs for it are at the following location: /var/log/snmptrapd.log</li>
+                            </ul>
+                    </div>
+                    <div class="section-block">
+                        <h3>SNMP Trap Logs</h3>
+                            <ul>
+                                <li>snmp traps are written to a temporary log location by the script at /opt/zabbix_trapd/zabbix_trap_receiver.pl. This is at the following location:
+        /var/log/snmptraps/snmptraps.log</li>
+                                <li>Note: If these traps stop flowing it is for one of a few reasons:
+                                <ol>
+                                    <li>Network/firewall connectivity problems on port 162</li>
+                                    <li>An issue with the script at /opt/zabbix_trapd/zabbix_trap_receiver.pl</li>
+                                </ol>
+                            </ul>
+                    </div>
+                <h2>Other Notes</h2>
+                    <div class="section-block">
+                        <h3>TCP vs. UDP</h3>
+                            <p>SNMP uses UDP for connectivity.</p>
+                            <p>With that in mind, the daemons snmpd and snmptrapd do not reside in a LISTEN state on a server.</p>
+                            <p>When they are functioning properly, you'll see something like the following:</p>
+<pre><code class="language-yaml">Proto Recv-Q Send-Q Local Address      Foreign Address    State    PID/Program name
+udp        0      0 127.0.0.1:161      0.0.0.0:*                   818/snmpd
+udp        0      0 0.0.0.0:162        0.0.0.0:*                   103995/snmptrapd
+udp6       0      0 ::1:161            :::*                        887/snmpd
+</code></pre>
+                    </div>
+            </p>
+        </article>
+
+        <aside data-sm="pad">
+            <p>
+                This portfolio includes generalized summaries of projects I contributed to professionally. Proprietary code, credentials, and infrastructure details have been excluded.
+            </p>
+        </aside>
+
+        <footer data-sm="pad" data-md="colspan2" data-lg="colspan4">
+            Copyright &copy; 2025 - Tyler Schrock
+        </footer>
+    </main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.accordion-toggle');
+    const content = document.querySelector('.accordion-content');
+    const icon = toggle.querySelector('i');
+
+    // Load the user's preference
+    const accordionState = localStorage.getItem('accordionState');
+
+    // Apply the state visually
+    if (accordionState === 'open') {
+      content.style.display = 'block';
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    } else {
+      content.style.display = 'none';
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+
+    // Handle user toggling the accordion
+    toggle.addEventListener('click', () => {
+      const isOpen = content.style.display === 'block';
+      const newState = isOpen ? 'closed' : 'open';
+
+      content.style.display = isOpen ? 'none' : 'block';
+      localStorage.setItem('accordionState', newState);
+
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+    });
+  });
+</script>
+
+</body>
+</html>

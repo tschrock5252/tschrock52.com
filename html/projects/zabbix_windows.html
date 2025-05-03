@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tschrock52.com - Home</title>
+    <link rel="stylesheet" href="../css/responsive-attributes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <main data-sm="1column gap" data-md="2column gap" data-lg="4column gap">
+        <header data-sm="pad" data-md="colspan2" data-lg="colspan4 order1">
+            <div data-sm="center" class="site-title">Tyler Schrock</div>
+            <p class="subtitle">{System, Site Reliability, DevOps, Platform} Engineer</p>
+              <div class="social-icons">
+                <a href="https://github.com/tschrock5252" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank"><i class="fab fa-linkedin"></i></a>
+              </div>
+        </header>
+
+        <section class="menu-container" data-sm="pad" data-lg="order2">
+            <div class="menu">
+                <a href="../index.html">Home</a>
+                <a href="../about_me.html">About Me</a>
+                <a href="../site_architecture.html">Site Architecture</a>
+                <div class="accordion">
+                  <button class="accordion-toggle">Projects <i class="fas fa-chevron-down"></i></button>
+                  <div class="accordion-content">
+                    <a href="aginity_premium.html" data-project>Aginity Premium</a>
+                    <a href="canonical_landscape.html" data-project>Canonical Landscape</a>
+                    <a href="crowdstrike.html" data-project>Crowdstrike</a>
+                    <a href="ibm_cdc.html" data-project>IBM Change Data Capture (CDC)</a>
+                    <a href="openvpn_as.html" data-project>OpenVPN (Access Server)</a>
+                    <a href="openvpn_ce.html" data-project>OpenVPN (Community Edition)</a>
+                    <a href="planview_tasktop.html" data-project>Planview TaskTop</a>
+                    <a href="report_retrieval.html" data-project>Report Retrieval (Tomcat)</a>
+                    <a href="zabbix_snmp.html" data-project>Zabbix (SNMP Monitoring)</a>
+                    <a href="zabbix_windows.html" data-project>Zabbix (Windows Monitoring)</a>
+                  </div>
+                </div>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/tschrock5252" target="_blank">GitHub</a>
+            </div>
+        </section>
+
+        <article data-sm="pad" data-md="colspan2">
+            <p>
+                <h2>Overview</h2>
+                    <p>The client I was working with required infrastructure monitoring for specific devices in their network.</p>
+                    <p>These were Windows systems. The client preferred we use Zabbix due to team familiarity with the product.</p>
+                <h2>Architecture Diagram(s)</h2>
+                    <img src="../images/architecture_zabbix_windows.png" alt="Zabbix Architecture" class="responsive-img">
+                <h3>Architecture Explanation</h3>
+                    <div class="section-block">
+                        <h4>
+                            Corporate Windows Devices
+                        </h4>
+                        <h5>zabbix-agent</h5>
+                        <ul>
+                            <li>These devices were configured to use the zabbix-agent to allow for industry-standardized monitoring with a Zabbix Server.</li>
+                            <li>This was implemented across all Windows devices using Group Policy.</li>
+                        </ul>
+                    </div>
+                    <div class="section-block">
+                        <h4>
+                            CNAME
+                        </h4>
+                        <p>
+                            The CNAME has a single purpose for this environment:
+                        </p>
+                        <ol>
+                            <li>Facilitating a clean and easy to remember name for the Zabbix Server across the network (for web access, ticketing, etc).</li>
+                        </ol>
+                    </div>
+                    <div class="section-block">
+                        <h4>
+                            Zabbix Server
+                        </h4>
+                        <h5>apache2 (Service)</h5>
+                        <ul>
+                            <li>apache2 runs as a service on the Zabbix Server. It front-ends the zabbix-server service allowing web access.</li>
+                            <li>apache2 listens on port 443.</li>
+                        </ul>
+                        <h5>zabbix-agent (Service)</h5>
+                        <ul>
+                            <li>The zabbix-agent service is running and listens on port 10050</li>
+                            <li>This service collects and provides detailed system metrics to the Zabbix Server.</li>
+                        </ul>
+                        <h5>zabbix-server (Service)</h5>
+                        <ul>
+                            <li>The zabbix-server service is running and listens on port 10051</li>
+                            <li>This service connects to devices on the network running the zabbix-agent service and retrieves monitoring information from them.</li>
+                            <li>This service integrates with email, PagerDuty, and other systems to notify teams of "downed" devices.</li>
+                        </ul>
+                    </div>
+                    <div class="section-block">
+                        <h4>
+                            Zabbix Database Server
+                        </h4>
+                        <h5>postgresql (service)</h5>
+                        <ul>
+                            <li>The postgresql service is running on the database service and listens on port 5432</li>
+                            <li>The client's database configuration(s) didn't need a lot of custom setup. They already had a thoroughly developed Puppet architecture for PostgreSQL.</li>
+                        </ul>
+                    </div>
+                <h2>Automation and Code</h2>
+                    <div class="section-block">
+                        <h3>Overview</h3>
+                        <p>
+                            My client required Zabbix installations that were repeatable. I chose to do this with Puppet in their environment.
+                        </p>
+                        <p>
+                            I wrote a wrapper around the following Puppet Forge Module: <a href="https://forge.puppet.com/modules/puppet/zabbix/readme">Vop Pupuli zabbix module</a>
+                        </p>
+                        <p>
+                            I specifically architected it around this configuration: <a href="https://github.com/voxpupuli/puppet-zabbix/wiki/Multi-node-Zabbix-Server-setup">Multi node Zabbix Server setup</a>
+                        </p>
+                        <p>
+                            The authors detail various methods on this page for installing Zabbix. I chose the <a href="https://github.com/voxpupuli/puppet-zabbix/wiki/Multi-node-Zabbix-Server-setup#2-servers">2-server configuration with PostgreSQL as the database backend.</a>
+                        </p>
+                    </div>
+                    <div class="section-block">
+                        <h3>Zabbix Database Server</h3>
+                        <p>
+                            The client's database configuration(s) didn't need a lot of custom setup. They already had a thoroughly developed Puppet architecture for PostgreSQL.
+                        </p>
+                        <p>
+                            The only need was to engage the database team and provide project requirements.
+                        </p>
+                    </div>
+                    <div class="section-block">
+                        <h3>Zabbix Application Server</h3>
+                        <p>
+                            <strong>Note(s)</strong>
+                        </p>
+                        <ul>
+                            <li>At this client, the team cloned copies of modules from upstream vendors and then referenced these modules in their Puppetfile.</li>
+                            <li>Doing this allowed them to build additional features onto vendor modules and also "wrap" them. It was a useful, though sometimes imperfect feature.</li>
+                            <li>To keep this code anonymous, I'll obfuscate filenames.</li>
+                        </ul>
+                        <h4>Agent Components</h4>
+                        <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::server_filename::agent_hostname
+ - Defines the agent server hostname, used for the Zabbix agent. By String
+ 
+name_of_zabbix_wrapper_module::server::agent_server
+ - Defines the Zabbix server to use for the agent. By String
+                        </code></pre>
+                        <h4>Server Components</h4>
+                        </code></pre>
+                        <h4>Server Components</h4>
+                        <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::server_filename::cachesize
+ - Defines the the size of the configuration cache, in bytes. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_server
+ - Defines the Zabbix database server. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_name
+ - Defines the Zabbix database name. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_user
+ - Defines the Zabbix database user. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_password
+ - Defines the Zabbix database password. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_type
+ - Defines the Zabbix database server type. Valid options are mysql and postgresql.
+ 
+name_of_zabbix_wrapper_module::server_filename::maxhousekeeperdelete
+ - Defines the max amount of rows 'housekeeper' task may delete.
+ 
+name_of_zabbix_wrapper_module::server_filename::startpingers
+ - Number of pre-forked instances of icmp pingers.
+ 
+name_of_zabbix_wrapper_module::server_filename::startdiscoverers
+ - Number of pre-forked instances of discoverers.
+ 
+name_of_zabbix_wrapper_module::server_filename::snmptrapperfile
+ - Defines the location of the snmp trap file.
+ 
+name_of_zabbix_wrapper_module::server_filename::startsnmptrapper
+ - Defines whether or not to start the snmptrapper. 0=no, 1=yes.
+ 
+name_of_zabbix_wrapper_module::server_filename::trendcachesize
+ - Size of trend cache, in bytes
+                    </code></pre>
+                    <h4>Web Components</h4>
+                    <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::server_filename::apache_php_max_execution_time
+ - Defines the Apache PHP max execution time. By Integer.
+ 
+name_of_zabbix_wrapper_module::server_filename::apache_php_max_input_time
+ - Defines the Apache PHP max input time. By Integer.
+ 
+name_of_zabbix_wrapper_module::server_filename::apache_php_post_max_size
+ - Defines the Apache PHP post maximum size. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::cname
+ - Defines the CNAME used to access the Zabbix web interface. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::app_server
+ - Defines the Zabbix application server. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_server
+ - Defines the Zabbix database server. By FQDN.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_name
+ - Defines the Zabbix database name. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_user
+ - Defines the Zabbix database user. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::database_password
+ - Defines the Zabbix database password. By String.
+ 
+name_of_zabbix_wrapper_module::server_filename::zabbix_web_title
+ - Defines the Web UI title of the Zabbix server. By String.
+                    </code></pre>
+                    <h4>SNMP trap Components</h4>
+                    <pre><code class="language-yaml">
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_community
+ - Defines the SNMP community that should be used by this server.
+ 
+name_of_zabbix_wrapper_module::receive_snmp_traps
+ - Defines whether or not a Zabbix Server should receive SNMP traps. Options are true or false. 
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script
+ - Defines the full path for the snmp perl script.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_owner
+ - Defines the user with ownership of the snmp_perl_script file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_group
+ - Defines the group with ownership of the snmp_perl_script file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmp_perl_script_mode
+ - Defines the access mode of the snmp_perl_script file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile
+ - Defines the full path for the snmptrapperfile.
+ - This is the temporary file that receives SNMP traps on the Zabbix server.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_owner
+ - Defines the user with ownership of the snmptrapperfile.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_group
+ - Defines the group with ownership of the snmptrapperfile.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapperfile_mode
+ - Defines the access mode of the snmptrapperfile.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_conf_file
+ - Defines the full path for the snmptrapd configuration file.
+ - This is at /etc/snmp/snmptrapd.conf by default.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_owner
+ - Defines the user with ownership of the snmptrapd configuration file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_group
+ - Defines the group with ownership of the snmptrapd configuration file.
+ 
+name_of_zabbix_wrapper_module::snmp_traps_filename::snmptrapd_mode
+ - Defines the access mode of the snmptrapd configuration file.
+                </code></pre>
+</div>
+                <h2>Monitoring</h2>
+                <p>This was a Zabbix environment where I provisioned the infrastructure and then handed the system off to my client.</p>
+                <p>All client monitoring setup(s), dashboards, and post-design setup processes were handled by their in-house staff.</p>
+                <h2>Logs</h2>
+                    <div class="section-block">
+                        <h3>Zabbix Agent Logs - Linux</h3>
+                            <ul>
+                                <li>Zabbix Agent logs on Linux VMs are at the following location: /var/log/syslog</li>
+                            </ul>
+                    </div>
+                    <div class="section-block">
+                        <h3>Zabbix Server Logs</h3>
+                            <ul>
+                                <li>Zabbix Server logs on Linux VMs are at the following location: /var/log/syslog</li>
+                            </ul>
+                    </div>
+            </p>
+        </article>
+
+        <aside data-sm="pad">
+            <p>
+                This portfolio includes generalized summaries of projects I contributed to professionally. Proprietary code, credentials, and infrastructure details have been excluded.
+            </p>
+        </aside>
+
+        <footer data-sm="pad" data-md="colspan2" data-lg="colspan4">
+            Copyright &copy; 2025 - Tyler Schrock
+        </footer>
+    </main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.accordion-toggle');
+    const content = document.querySelector('.accordion-content');
+    const icon = toggle.querySelector('i');
+
+    // Load the user's preference
+    const accordionState = localStorage.getItem('accordionState');
+
+    // Apply the state visually
+    if (accordionState === 'open') {
+      content.style.display = 'block';
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    } else {
+      content.style.display = 'none';
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+
+    // Handle user toggling the accordion
+    toggle.addEventListener('click', () => {
+      const isOpen = content.style.display === 'block';
+      const newState = isOpen ? 'closed' : 'open';
+
+      content.style.display = isOpen ? 'none' : 'block';
+      localStorage.setItem('accordionState', newState);
+
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+    });
+  });
+</script>
+</body>
+</html>

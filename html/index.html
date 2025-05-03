@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tschrock52.com - Home</title>
+    <link rel="stylesheet" href="css/responsive-attributes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main data-sm="1column gap" data-md="2column gap" data-lg="4column gap">
+        <header data-sm="pad" data-md="colspan2" data-lg="colspan4 order1">
+            <div data-sm="center" class="site-title">Tyler Schrock</div>
+            <p class="subtitle">{System, Site Reliability, DevOps, Platform} Engineer</p>
+              <div class="social-icons">
+                <a href="https://github.com/tschrock5252" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank"><i class="fab fa-linkedin"></i></a>
+              </div>
+        </header>
+
+        <section class="menu-container" data-sm="pad" data-lg="order2">
+            <div class="menu">
+                <a href="index.html">Home</a>
+                <a href="about_me.html">About Me</a>
+                <a href="site_architecture.html">Site Architecture</a>
+                <div class="accordion">
+                  <button class="accordion-toggle">Projects <i class="fas fa-chevron-down"></i></button>
+                  <div class="accordion-content">
+                    <a href="projects/aginity_premium.html" data-project>Aginity Premium</a>
+                    <a href="projects/canonical_landscape.html" data-project>Canonical Landscape</a>
+                    <a href="projects/crowdstrike.html" data-project>Crowdstrike</a>
+                    <a href="projects/ibm_cdc.html" data-project>IBM Change Data Capture (CDC)</a>
+                    <a href="projects/openvpn_as.html" data-project>OpenVPN (Access Server)</a>
+                    <a href="projects/openvpn_ce.html" data-project>OpenVPN (Community Edition)</a>
+                    <a href="projects/planview_tasktop.html" data-project>Planview TaskTop</a>
+                    <a href="projects/report_retrieval.html" data-project>Report Retrieval (Tomcat)</a>
+                    <a href="projects/zabbix_network.html" data-project>Zabbix (Network Monitoring)</a>
+                    <a href="projects/zabbix_snmp.html" data-project>Zabbix (SNMP Monitoring)</a>
+                    <a href="projects/zabbix_windows.html" data-project>Zabbix (Windows Monitoring)</a>
+                  </div>
+                </div>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/tschrock5252" target="_blank">GitHub</a>
+            </div>
+        </section>
+
+        <article data-sm="pad" data-md="colspan2">
+            <p>
+                Welcome to my website. Here I will have links to social media platforms specific to my job-hunting, projects that I think are worthy of showcasing, and more.
+            </p>
+            <p>
+                Please feel free to use the Contact Me form here to get in touch. I'll try to get back to you as soon as possible. I appreciate you taking the time to visit, and I hope you have a great day!
+            </p>
+        </article>
+
+        <aside data-sm="pad">
+            <p>
+                This portfolio includes generalized summaries of projects I contributed to professionally. Proprietary code, credentials, and infrastructure details have been excluded.
+            </p>
+        </aside>
+
+        <footer data-sm="pad" data-md="colspan2" data-lg="colspan4">
+            Copyright &copy; 2025 - Tyler Schrock
+        </footer>
+    </main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.accordion-toggle');
+    const content = document.querySelector('.accordion-content');
+    const icon = toggle.querySelector('i');
+
+    // Load the user's preference
+    const accordionState = localStorage.getItem('accordionState');
+
+    // Apply the state visually
+    if (accordionState === 'open') {
+      content.style.display = 'block';
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    } else {
+      content.style.display = 'none';
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+
+    // Handle user toggling the accordion
+    toggle.addEventListener('click', () => {
+      const isOpen = content.style.display === 'block';
+      const newState = isOpen ? 'closed' : 'open';
+
+      content.style.display = isOpen ? 'none' : 'block';
+      localStorage.setItem('accordionState', newState);
+
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+    });
+  });
+</script>
+</body>
+</html>

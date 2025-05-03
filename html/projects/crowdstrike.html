@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tschrock52.com - Home</title>
+    <link rel="stylesheet" href="../css/responsive-attributes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+    <main data-sm="1column gap" data-md="2column gap" data-lg="4column gap">
+        <header data-sm="pad" data-md="colspan2" data-lg="colspan4 order1">
+            <div data-sm="center" class="site-title">Tyler Schrock</div>
+            <p class="subtitle">{System, Site Reliability, DevOps, Platform} Engineer</p>
+              <div class="social-icons">
+                <a href="https://github.com/tschrock5252" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank"><i class="fab fa-linkedin"></i></a>
+              </div>
+        </header>
+
+        <section class="menu-container" data-sm="pad" data-lg="order2">
+            <div class="menu">
+                <a href="../index.html">Home</a>
+                <a href="../about_me.html">About Me</a>
+                <a href="../site_architecture.html">Site Architecture</a>
+                <div class="accordion">
+                  <button class="accordion-toggle">Projects <i class="fas fa-chevron-down"></i></button>
+                  <div class="accordion-content">
+                    <a href="aginity_premium.html" data-project>Aginity Premium</a>
+                    <a href="canonical_landscape.html" data-project>Canonical Landscape</a>
+                    <a href="crowdstrike.html" data-project>Crowdstrike</a>
+                    <a href="ibm_cdc.html" data-project>IBM Change Data Capture (CDC)</a>
+                    <a href="openvpn_as.html" data-project>OpenVPN (Access Server)</a>
+                    <a href="openvpn_ce.html" data-project>OpenVPN (Community Edition)</a>
+                    <a href="planview_tasktop.html" data-project>Planview TaskTop</a>
+                    <a href="report_retrieval.html" data-project>Report Retrieval (Tomcat)</a>
+                    <a href="zabbix_snmp.html" data-project>Zabbix (SNMP Monitoring)</a>
+                    <a href="zabbix_windows.html" data-project>Zabbix (Windows Monitoring)</a>
+                  </div>
+                </div>
+                <a href="https://www.linkedin.com/in/tyler-schrock-a5243961/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/tschrock5252" target="_blank">GitHub</a>
+            </div>
+        </section>
+
+        <article data-sm="pad" data-md="colspan2">
+            <p>
+                <h2>Overview</h2>
+                <p>
+                    Installing Crowdstrike on Linux is a well-documented process.
+                </p>
+                <p>
+                    The manual setup instructions can be found on the following page - provided to us by the vendor: <a href="https://www.crowdstrike.com/blog/tech-center/install-falcon-sensor-for-linux/">https://www.crowdstrike.com/blog/tech-center/install-falcon-sensor-for-linux/</a>
+                </p>
+                <p>
+                    However, my client wanted to automate this process throughout their environment so that it was easier to do on multiple VMs/Servers.
+                </p>
+                <h2>Architecture Diagram</h2>
+                    <img src="../images/architecture_crowdstrike.png" alt="Crowdstrike Architecture" class="responsive-img">
+                <h3>Architecture Explanation</h3>
+                    <p>
+                        Crowdstrike consisted of two key pieces in the environment where I built it. These both needed to function properly or the software wasn't effective.
+                    </p>
+                    <ol>
+                        <li>The sensor download process from the vendor website. This artifact was then installed on the organization's Artifact location (Artifactory)</li>
+                            <ul>
+                                <li>This was done using Ansible / AWX and a scheduled job that ran each week.</li>
+                            </ul>
+                        <li>The sensor installation process on Linux systems.</li>
+                            <ul>
+                                <li>This was done using Puppet. The version of Puppet was dependent on the Operating System(s) we were installing to. (Puppet 4, Puppet 6, and Puppet 8 were in-use)</li>
+                            </ul>
+                    </ol>
+                <h2>Installation Steps & Code</h2>
+                <h3>AWX</h3>
+                    <p>
+                        Code for this is not presently being published on GitHub. Doing so risks copyright infringement.
+                    </p>
+                <h3>Puppet {4, 6, 8}</h3>
+                    <p>
+                        Code for this is not presently being published on GitHub. Doing so risks copyright infringement.
+                    </p>
+                <h2>Service Control</h2>
+                <p>Once Crowdstrike is set up and working, a service gets installed on your server to ensure that it is protected and the application is functioning as expected.</p>
+                <p>The name of this service is <strong>falcon-sensor</strong>.</p>
+                </p>Administrators are able to perform standard service operations on this service using the following commands:</p>
+                <pre><code class="language-bash">
+# Start the service:
+sudo systemctl start falcon-sensor
+
+# Stop the service:
+sudo systemctl stop falcon-sensor
+
+# Restart the service:
+sudo systemctl restart falcon-sensor
+
+# Check the service status:
+sudo systemctl status falcon-sensor
+                </code></pre>
+            </p>
+        </article>
+
+        <aside data-sm="pad">
+            <p>
+                This portfolio includes generalized summaries of projects I contributed to professionally. Proprietary code, credentials, and infrastructure details have been excluded.
+            </p>
+        </aside>
+
+        <footer data-sm="pad" data-md="colspan2" data-lg="colspan4">
+            Copyright &copy; 2025 - Tyler Schrock
+        </footer>
+    </main>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.accordion-toggle');
+    const content = document.querySelector('.accordion-content');
+    const icon = toggle.querySelector('i');
+
+    // Load the user's preference
+    const accordionState = localStorage.getItem('accordionState');
+
+    // Apply the state visually
+    if (accordionState === 'open') {
+      content.style.display = 'block';
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    } else {
+      content.style.display = 'none';
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+
+    // Handle user toggling the accordion
+    toggle.addEventListener('click', () => {
+      const isOpen = content.style.display === 'block';
+      const newState = isOpen ? 'closed' : 'open';
+
+      content.style.display = isOpen ? 'none' : 'block';
+      localStorage.setItem('accordionState', newState);
+
+      icon.classList.toggle('fa-chevron-down');
+      icon.classList.toggle('fa-chevron-up');
+    });
+  });
+</script>
+</body>
+</html>
