@@ -30,3 +30,82 @@ http-request set-header Host www.tschrock52.com
 ##### Service -> Site Pods -> Client
  - The tschrock52-service forwards the request to the correct pod (tschrock52-site-aaaaaaaaaa-bbbbb/schrock52-site-xxxxxxxxxx-yyyyy).
  - The pod processes the request and returns a response to the client.
+
+### Code
+### deployment.yaml
+```YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tschrock52-site
+  namespace: tschrock52
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tschrock52-site
+  template:
+    metadata:
+      labels:
+        app: tschrock52-site
+    spec:
+      containers:
+      - name: nginx
+        image: tschrock52/tschrock52-html-site:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tschrock52-service
+  namespace: tschrock52
+spec:
+  type: ClusterIP
+  selector:
+    app: tschrock52-site
+  ports:
+  - port: 80
+    targetPort: 80
+```
+### metallb-config.yaml
+```YAML
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  namespace: metallb-system
+  name: tschrock52-pool
+spec:
+  addresses:
+  - 10.1.0.175-10.1.0.185
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  namespace: metallb-system
+  name: l2-adv
+```
+### tschrock52-ingress.yaml
+```YAML
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tschrock52-ingress
+  namespace: tschrock52
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: www.tschrock52.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tschrock52-service
+            port:
+              number: 80
+```
