@@ -185,12 +185,13 @@ spec:
                           </code></pre>
                           <h3>CI/CD</h3>
                               <p>A full CI/CD pipeline using GitHub Actions or another similar tool wasn't built for this site.</p>
-                              <p>I wanted to develop a fast and secure CI/CD environment locally that let me do the following:</p>
+                              <p>I wanted to develop a fast and secure CI/CD environment locally that let me accomplush the following goals:</p>
                               <ul>
                                   <li>Integrate with VSCode so my changes could easily be saved and synced to a testing server (I did this with SFTP).</li>
-                                  <li>Automatically build the site image and re-redeploy it to Docker Hub every time I synced changes to aforementioned testing server.</li>
-                                  <li>Automatically deployed the image to my Kubernetes cluster via rollout.</li>
+                                  <li>Automatically build the site image and re-redeploy it to Docker Hub every time I synced changes to the aforementioned testing server.</li>
+                                  <li>Automatically deployed the image to my Kubernetes cluster using the kubectl rollout command.</li>
                               </ul>
+                              <hr />
                               <p>To do this, I used a couple simple scripts:</p>
                               <ol>
                                   <li>A script watcher.sh that ran consistently in a cron job on the aforementioned "testing" server.</li>
