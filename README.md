@@ -11,11 +11,11 @@
  - The HAPRoxy frontend uses a wildcard certificate from LetsEncrypt to provide secure SSL encryption.
  - HAProxy has a backend tied to this frontend and custom configuration options defined.
 
-**HAProxy's Http check version:**
+###### HAProxy's Http check version:
 ```
 HTTP/1.1\r\nHost:\ www.tschrock52.com\r\nAccept:\ */*
 ```
-**HAProxy's Backend pass thru:**
+###### HAProxy's Backend pass thru:
 ```
 http-request set-header Host www.tschrock52.com
 ```
