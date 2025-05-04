@@ -122,7 +122,7 @@ aside form button:hover {
 }
 
 /* Contact Sidebar Enhancements */
-.contact-section h2 {
+aside h2 {
   font-size: 1.25rem;
   margin-bottom: 12px;
   color: #2c3e50;
@@ -135,6 +135,26 @@ aside form button:hover {
   color: #555;
   margin-top: 24px;
   line-height: 1.4;
+}
+
+.resume-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-weight: 500;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.resume-link:hover {
+  color: #2870a1;
+}
+
+.resume-link svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Accordion styling */

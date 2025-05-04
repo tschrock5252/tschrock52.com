@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <main data-sm="1column gap" data-md="2column gap" data-lg="4column gap">
@@ -49,19 +50,43 @@
 
         <article data-sm="pad" data-md="colspan2">
             <p>
-                Main page content.
+              <h2>Background</h2>
+                  <p>I am a System Engineer with over 10 years of experience in the IT industry, specializing in Linux and cloud technologies.</p>
+                  <p>I was born and raised in a small town in Ohio.</p>
+                  <p>I've been working with computers since I was in my early teens and have always had a passion for technology.</p>
+              <h2>Education</h2>
+                  <p>My technical background is in Computer Networking, specifically in Cisco Networking. I studied this both in High School as well as college.</p>
+              <h2>Career</h2>
+                  <p>After my time in education, while contracting, I took over as the lead Linux Administrator for a competitive and busy firm based out of Akron.</p>
+
+                  <p>I was responsible for maintaining their Linux infrastructure and ensuring those systems were secure and up to date.</p>
+
+                  <p>The next step in my career growth was moving towards an organization that was more centrally focused in the Linux space.</p>
+
+                  <p>In 2015, I joined Genomoncology, where I was responsible for maintaining their OpenStack Kilo infrastructure. During my time there, I supported the environment that powered their Clinical Workbench software — a platform used to assist physicians in early cancer detection and treatment. As the company evolved, it began transitioning away from OpenStack in favor of modern cloud infrastructure. I had the opportunity to work alongside an exceptionally talented team of developers throughout this shift.</p>
+
+                  <p>In 2016, I began seeking opportunities to deepen my cloud expertise under the guidance of experienced mentors. I joined DialogTech (now Invoca), a company with a strong engineering presence in Cleveland and headquarters in Chicago. Working remotely throughout my tenure, I contributed to the development of advanced voice-based IVR infrastructure, spanning both on-premises systems and AWS. I continued this work through 2019.</p>
+
+                  <p>In 2019, I joined O'Reilly Auto Parts, working remotely in support of their corporate IT operations. Over the past six years, I've collaborated closely with multiple development teams — with a particular focus on supporting retail-facing applications. My responsibilities have included designing and maintaining resilient infrastructure, executing data center migrations, enhancing system security in coordination with the InfoSec team, and ensuring ongoing compliance with PCI standards.</p>
             </p>
         </article>
 
         <aside data-sm="pad">
-          <section class="contact-section">
-            <h2>Contact Me</h2>
-            <form action="https://formspree.io/f/xeogabpa" method="POST">
-              <input type="text" name="name" required placeholder="Your Name">
-              <input type="email" name="email" required placeholder="Your Email">
-              <textarea name="message" required placeholder="Your Message"></textarea>
-              <button type="submit">Send</button>
-            </form>
+            <section class="resume-section">
+             <h2>Résumé</h2>
+             <a href="files/tyler_schrock_resume.pdf" target="_blank" class="resume-link">
+               <i data-lucide="file-text"></i>
+               <span>View PDF</span>
+             </a>
+           </section>
+           <section class="contact-section">
+             <h2>Contact Me</h2>
+             <form action="https://formspree.io/f/xeogabpa" method="POST">
+               <input type="text" name="name" required placeholder="Your Name">
+               <input type="email" name="email" required placeholder="Your Email">
+               <textarea name="message" required placeholder="Your Message"></textarea>
+               <button type="submit">Send</button>
+             </form>
           </section>
         
           <section class="disclaimer">
@@ -107,6 +132,9 @@
       icon.classList.toggle('fa-chevron-up');
     });
   });
+</script>
+<script>
+  lucide.createIcons();
 </script>
 </body>
 </html>
