@@ -183,6 +183,59 @@ spec:
             port:
               number: 80
                           </code></pre>
+                          <h3>CI/CD</h3>
+                              <p>A full CI/CD pipeline using GitHub Actions or another similar tool wasn't built for this site.</p>
+                              <p>I wanted to develop a fast and secure CI/CD environment locally that let me do the following:</p>
+                              <ul>
+                                  <li>Integrate with VSCode so my changes could easily be saved and synced to a testing server (I did this with SFTP).</li>
+                                  <li>Automatically build the site image and re-redeploy it to Docker Hub every time I synced changes to aforementioned testing server.</li>
+                                  <li>Automatically deployed the image to my Kubernetes cluster via rollout.</li>
+                              </ul>
+                              <p>To do this, I used a couple simple scripts:</p>
+                              <ol>
+                                  <li>A script watcher.sh that ran consistently in a cron job on the aforementioned "testing" server.</li>
+                                      <ul>
+                                          <li>Note: This script detects changes any time they occur on the local file system of the testing server using inotifywait</li>
+                                      </ul>
+                                  <li>A script named autobuild.sh that was triggered by watcher.sh every time a change was detected by inotifywait. This script did the following:</li>
+                                      <ol>
+                                          <li>docker build -t tschrock52-html-site /var/www/html</li>
+                                          <li>docker tag tschrock52-html-site tschrock52/tschrock52-html-site</li>
+                                          <li>docker push tschrock52/tschrock52-html-site</li>
+                                          <li>kubectl rollout restart deployment tschrock52-site -n tschrock52</li>
+                                      </ol>
+                              </ol>
+                              <h4>CI/CD - Code</h4>
+                              <h5>watcher.sh</h5>
+                                  <p><strong>Source: </strong><a href="https://github.com/tschrock5252/tschrock52.com/blob/main/watcher.sh">watcher.sh</a></p>
+                                  <pre><code class="language-bash">
+#!/bin/bash
+
+# === CONFIG ===
+WATCH_DIR="/var/www/html/"
+TRIGGER_SCRIPT="/var/www/autobuild.sh"
+
+echo "Watching directory: $WATCH_DIR"
+echo "Changes will trigger: $TRIGGER_SCRIPT"
+
+# === Start watching ===
+inotifywait -m -r -e modify,create,delete,move "$WATCH_DIR" --format '%w%f' | while read file; do
+    echo "Detected change: $file"
+    echo "Running trigger script..."
+    bash "$TRIGGER_SCRIPT"
+done
+                                  </code></pre>
+                              <h5>autobuild.sh</h5>
+                                  <p><strong>Source: </strong><a href="https://github.com/tschrock5252/tschrock52.com/blob/main/autobuild.sh">autobuild.sh</a></p>
+                                  <pre><code class="language-bash">
+#!/bin/bash
+cd /var/www/html
+docker build -t tschrock52-html-site /var/www/html
+docker tag tschrock52-html-site tschrock52/tschrock52-html-site
+docker push tschrock52/tschrock52-html-site
+sleep 5
+kubectl rollout restart deployment tschrock52-site -n tschrock52
+                                  </code></pre>
                   </div>
             </p>
         </article>
